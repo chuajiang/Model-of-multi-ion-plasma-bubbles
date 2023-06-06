@@ -1,4 +1,5 @@
 clear all;
+close all;
 load('plasma_bubble_2016032007_ions.mat');
 load('vik.mat');
 
@@ -13,11 +14,13 @@ figure(plotfig+1);
 figure(plotfig+2);
 figure(plotfig+3);%NO+
 figure(plotfig+4);%O2+
+figure(plotfig+5);%potential
 figindex=1;
 itindex=1;
 showtime=[1249.5 1552.81 1583.14 1596.58 1610.71 1645.16 1754.70 1832.82 ];
 for i=1:length(showtime)
     
+    phy_tmp=reshape(simulation_data.phy(i,:,:),nx,nz);
     NE_tmp=reshape(simulation_data.Ne(i,:,:),nx,nz);
     hp_tmp=reshape(simulation_data.hp(i,:,:),nx,nz);
     op_tmp=reshape(simulation_data.op(i,:,:),nx,nz);
@@ -29,7 +32,7 @@ for i=1:length(showtime)
     datatmp_dt=simulation_data.dt(i);
 
 %     figure;
-    strtitle=sprintf('t=%0.2fs',datatmp_dt(1));
+    strtitle=sprintf('t=%0.2fs',datatmp_dt(1)-20000);
     figure(plotfig);
     subplot(2,4,figindex);
 
@@ -130,10 +133,32 @@ for i=1:length(showtime)
     
   if figindex==4 || figindex==8
       colorbar; 
+  end
+    set(gca,'FontName','Helvetica', 'FontSize',14,'fontweight','bold' );
+    
+    figure(plotfig+5);%%potential
+    subplot(2,4,figindex);
+    datatmp=reshape(phy_tmp(:,:),nx,nz);
+    contourf((0:nx-1)*2,hb+(0:nz-1)*2,(datatmp'),'LevelStep',50,'LineWidth',0.1);
+    %contourf((0:nx-1)*2,hb+(0:nz-1)*2,(datatmp'),'LevelStep',20,'LineWidth',0.1);
+    colormap(vik);
+    caxis([-400 400]);
+    axis([0 (nx-1)*2 hb hb+(nz-1)*2]);
+    title(strtitle);
+
+   if figindex==1 || figindex==5
+        ylabel('Altitude (km)','FontSize',14,'fontweight','bold');
+    end
+   if figindex==6 || figindex==5|| figindex==7|| figindex==8
+        xlabel('Zonal distance (km)','FontSize',14,'fontweight','bold');
    end
     
-    set(gca,'FontName','Helvetica', 'FontSize',14,'fontweight','bold' );
-    figindex=figindex+1;
+  if figindex==4 || figindex==8
+      colorbar; 
+  end
+  set(gca,'FontName','Helvetica', 'FontSize',14,'fontweight','bold' );
+    
+   figindex=figindex+1;
 
     pause(1);
     
